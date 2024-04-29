@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.24.24.22086",
-      "templateHash": "16508740159591929133"
+      "version": "0.26.170.59819",
+      "templateHash": "18013952058343046591"
     }
   },
   "parameters": {
@@ -173,8 +173,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.24.24.22086",
-              "templateHash": "13489832875460396326"
+              "version": "0.26.170.59819",
+              "templateHash": "17446925573703323983"
             }
           },
           "parameters": {
@@ -303,6 +303,13 @@
               "metadata": {
                 "description": "Option to deploy Arc-enabled SQL scenarios."
               }
+            },
+            "vmsDiskSku": {
+              "type": "string",
+              "defaultValue": "Premium_LRS",
+              "metadata": {
+                "description": "The SKU of the VMs disk"
+              }
             }
           },
           "variables": {
@@ -371,14 +378,23 @@
                     "managedDisk": {
                       "storageAccountType": "[variables('osDiskType')]"
                     },
-                    "diskSizeGB": 1024
+                    "diskSizeGB": 256
                   },
                   "imageReference": {
                     "publisher": "MicrosoftWindowsServer",
                     "offer": "WindowsServer",
                     "sku": "[parameters('windowsOSVersion')]",
                     "version": "latest"
-                  }
+                  },
+                  "dataDisks": [
+                    {
+                      "createOption": "Attach",
+                      "lun": 0,
+                      "managedDisk": {
+                        "id": "[resourceId('Microsoft.Compute/disks', format('{0}-VMsDisk', parameters('vmName')))]"
+                      }
+                    }
+                  ]
                 },
                 "networkProfile": {
                   "networkInterfaces": [
@@ -398,8 +414,25 @@
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]",
+                "[resourceId('Microsoft.Compute/disks', format('{0}-VMsDisk', parameters('vmName')))]"
               ]
+            },
+            {
+              "type": "Microsoft.Compute/disks",
+              "apiVersion": "2023-04-02",
+              "name": "[format('{0}-VMsDisk', parameters('vmName'))]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "[parameters('vmsDiskSku')]"
+              },
+              "properties": {
+                "creationData": {
+                  "createOption": "Empty"
+                },
+                "diskSizeGB": 1024,
+                "burstingEnabled": true
+              }
             },
             {
               "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -463,8 +496,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.24.24.22086",
-              "templateHash": "9163383663374969400"
+              "version": "0.26.170.59819",
+              "templateHash": "7237325783497799028"
             }
           },
           "parameters": {
@@ -542,8 +575,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.24.24.22086",
-              "templateHash": "7588261031150991545"
+              "version": "0.26.170.59819",
+              "templateHash": "1106682342427433748"
             }
           },
           "parameters": {
@@ -927,8 +960,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.24.24.22086",
-              "templateHash": "292432974089649184"
+              "version": "0.26.170.59819",
+              "templateHash": "7320157115012360833"
             }
           },
           "parameters": {
@@ -4527,8 +4560,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.24.24.22086",
-              "templateHash": "49313075204849103"
+              "version": "0.26.170.59819",
+              "templateHash": "3161118877044017353"
             }
           },
           "parameters": {
@@ -4713,8 +4746,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.24.24.22086",
-                      "templateHash": "5494053119567026931"
+                      "version": "0.26.170.59819",
+                      "templateHash": "8360470170332663328"
                     }
                   },
                   "parameters": {
@@ -4913,8 +4946,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.24.24.22086",
-              "templateHash": "117861029639361569"
+              "version": "0.26.170.59819",
+              "templateHash": "16613582178417144294"
             }
           },
           "parameters": {

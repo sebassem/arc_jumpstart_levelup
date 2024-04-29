@@ -1,6 +1,6 @@
 $Env:ArcBoxDir = "C:\ArcBox"
 $Env:ArcBoxLogsDir = "$Env:ArcBoxDir\Logs"
-$Env:ArcBoxVMDir = "$Env:ArcBoxDir\Virtual Machines"
+$Env:ArcBoxVMDir = "F:\Virtual Machines"
 $Env:ArcBoxIconDir = "$Env:ArcBoxDir\Icons"
 $agentScript = "$Env:ArcBoxDir\agentScript"
 
@@ -20,12 +20,6 @@ $sas = "*?si=ArcBox-RL&spr=https&sv=2022-11-02&sr=c&sig=vg8VRjM00Ya%2FGa5izAq3b0
 
 $vhdSourceFolderESU = "https://jsvhds.blob.core.windows.net/scenarios/prod"
 $sasESU = "*?si=JS-RL&spr=https&sv=2022-11-02&sr=c&sig=fIIeEliw5nG78oR6TBCvM70VMz9WXhpF41wdDoOlE8U%3D"
-
-# Change to use the level-up CDN for VHDs
-
-#$usLocations = @('eastus', 'eastus2', 'centralus', 'westus2')
-#$europeLocations = @('northeurope', 'westeurope', 'francecentral', 'uksouth')
-#$apacLocations = @( 'southeastasia', 'australiaeast', 'japaneast', 'koreacentral')
 
 # Archive exising log file and crate new one
 $logFilePath = "$Env:ArcBoxLogsDir\ArcServersLogonScript.log"
@@ -173,53 +167,13 @@ if (!([System.IO.File]::Exists($win2k19vmvhdPath) -and [System.IO.File]::Exists(
     # Other ArcBox flavors does not have an azcopy network throughput capping
     Write-Output "Downloading nested VMs VHDX files. This can take some time, hold tight..."
 
-    <#switch ($azureLocation) {
-        "eastus2" {
-            $vhdSourceFolder = "https://jsvhdslevelupeus2.blob.core.windows.net/arcbox"
-            $sas = "*?si=jsvhds-sas-policy&spr=https&sv=2022-11-02&sr=c&sig=1eyW6VmrDzlJNsFSssBCoyNH4i6zt5mSvcuVgFuPv%2BM%3D"
-        }
-        "eastus" {
-            $vhdSourceFolder = "https://jsvhdslevelup.blob.core.windows.net/arcbox"
-            $sas = "*?si=jsvhds-sas-policy&spr=https&sv=2022-11-02&sr=c&sig=X9L09UCkIaDNWHh6AsDKQ%2Fc%2BZrRBMnMV1uBhT2zrdLE%3D"
-        }
-        "westeus2" {
-            $vhdSourceFolder = "https://jsvhdslevelupwus2.blob.core.windows.net/arcbox"
-            $sas = "*?si=jsvhds-sas-policy&spr=https&sv=2022-11-02&sr=c&sig=SlV3WhjWTty%2Bb3xRs3ah50CPbeirU%2FwMk6zlQf5XP80%3D"
-        }
-        "southeastasia" {
-            $vhdSourceFolder = "https://jsvhdslevelupapac.blob.core.windows.net/arcbox"
-            $sas = "*?si=jsvhds-sas-policy&spr=https&sv=2022-11-02&sr=c&sig=9gZdHXNd6CXmkKG0NZjDhzT9ACELpsYGcRIbzlyLfJg%3D"
-        }
-        "australiaeast" {
-            $vhdSourceFolder = "https://jsvhdslevelupausteast.blob.core.windows.net/arcbox"
-            $sas = "*?si=jsvhds-sas-policy&spr=https&sv=2022-11-02&sr=c&sig=GEkCDlxRclmP4NcuXHr1OFC7UoKwMJRLGolfGnTIYrk%3D"
-        }
-        "japaneast" {
-            $vhdSourceFolder = "https://jsvhdslevelupjapaneast.blob.core.windows.net/arcbox"
-            $sas = "*?si=jsvhds-sas-policy&spr=https&sv=2022-11-02&sr=c&sig=%2Bhl6euOEP0xw2OCDwViLuRy8wShfThb62%2F9dkEsJBao%3D"
-
-        }
-        "westeurope" {
-            $vhdSourceFolder = "https://jsvhdslevelupeurope.blob.core.windows.net/arcbox"
-            $sas = "*?si=jsvhds-sas-policy&spr=https&sv=2022-11-02&sr=c&sig=Uz0fPIEfBsKglScotYtEnAATSTx187DzyE2gNXV40y4%3D"
-        }
-        "northeurope" {
-            $vhdSourceFolder = "https://jsvhdslevelupnortheu.blob.core.windows.net/arcbox"
-            $sas = "*?si=jsvhds-sas-policy&spr=https&sv=2022-11-02&sr=c&sig=ldvkO%2FWUJsNV%2FvFVjyMGtORZzeHA4QZN75ipkeT5T94%3D"
-        }
-        Default {
-            $vhdSourceFolder = "https://jsvhdslevelup.blob.core.windows.net/arcbox"
-            $sas = "*?si=jsvhds-sas-policy&spr=https&sv=2022-11-02&sr=c&sig=X9L09UCkIaDNWHh6AsDKQ%2Fc%2BZrRBMnMV1uBhT2zrdLE%3D"
-        }
-    }#>
-
     if ($deploySQL -eq $true) {
-        azcopy cp $vhdSourceFolder/$sas $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;${SQLvmName}.vhdx;" --recursive=true --check-length=false --cap-mbps 1200 --log-level=ERROR --check-md5 NoCheck
+        azcopy cp $vhdSourceFolder/$sas $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;${SQLvmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
     }
     else {
-        azcopy cp $vhdSourceFolder/$sas $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;" --recursive=true --check-length=false --cap-mbps 1200 --log-level=ERROR --check-md5 NoCheck
+        azcopy cp $vhdSourceFolder/$sas $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
     }
-    azcopy cp $vhdSourceFolderESU/$sasESU $Env:ArcBoxVMDir --include-pattern "${Win2k12vmName}.vhdx;" --recursive=true --check-length=false --cap-mbps 1200 --log-level=ERROR --check-md5 NoCheck
+    azcopy cp $vhdSourceFolderESU/$sasESU $Env:ArcBoxVMDir --include-pattern "${Win2k12vmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
 }
 
 # Create the nested VMs if not already created
@@ -287,7 +241,7 @@ if ($deploySQL -eq $true) {
     Start-VM -Name $SQLvmName
 }
 
-Start-Sleep -seconds 20
+Start-Sleep -seconds 40
 
 # Configure WinRM for 2012 machine
 $2012Machine = Get-VM $Win2k12MachineName
@@ -328,7 +282,7 @@ Invoke-Command -ComputerName $Win2k12vmName -ScriptBlock { Rename-Computer -NewN
 $Ubuntu01VmIp = Get-VM -Name $Ubuntu01vmName | Select-Object -ExpandProperty NetworkAdapters | Select-Object -ExpandProperty IPAddresses | Select-Object -Index 0
 $Ubuntu02VmIp = Get-VM -Name $Ubuntu02vmName | Select-Object -ExpandProperty NetworkAdapters | Select-Object -ExpandProperty IPAddresses | Select-Object -Index 0
 
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 30
 
 # Copy installation script to nested Windows VMs
 Write-Output "Transferring installation script to nested Windows VMs..."
@@ -342,6 +296,14 @@ if($deploySQL -eq $true){
 }
 
 (Get-Content -path "$agentScript\installArcAgentUbuntu.sh" -Raw) -replace '\$spnClientId', "'$Env:spnClientId'" -replace '\$spnClientSecret', "'$Env:spnClientSecret'" -replace '\$resourceGroup', "'$Env:resourceGroup'" -replace '\$spnTenantId', "'$Env:spnTenantId'" -replace '\$azureLocation', "'$Env:azureLocation'" -replace '\$subscriptionId', "'$Env:subscriptionId'" | Set-Content -Path "$agentScript\installArcAgentModifiedUbuntu.sh"
+
+# Download and restore AdventureWorks Database to SQLvm
+if($deploySQL -eq $true){
+Write-Host "Restoring AdventureWorks database"
+Copy-VMFile $SQLvmName -SourcePath "$Env:ArcBoxDir\AdventureWorksLT2019.bak" -DestinationPath "$Env:ArcBoxDir\AdventureWorksLT2019.bak" -CreateFullPath -FileSource Host -Force
+Start-Sleep -Seconds 3
+Invoke-Command -VMName $SQLvmName -ScriptBlock {Restore-SqlDatabase -ServerInstance $Env:COMPUTERNAME -Database "AdventureWorksLT2019" -BackupFile C:\ArcBox\AdventureWorksLT2019.bak -PassThru -Verbose} -Credential $winCreds
+}
 
 # Copy installation script to nested Linux VMs
 Write-Output "Transferring installation script to nested Linux VMs..."
@@ -359,33 +321,16 @@ Invoke-Command -ComputerName $Win2k12vmName -ScriptBlock { powershell -File $Usi
 
 #Invoke-Command -VMName $Win2k22vmName -ScriptBlock { powershell -File $Using:nestedVMArcBoxDir\installArcAgent.ps1 -spnClientId $Using:spnClientId, -spnClientSecret $Using:spnClientSecret, -spnTenantId $Using:spnTenantId, -subscriptionId $Using:subscriptionId, -resourceGroup $Using:resourceGroup, -azureLocation $Using:azureLocation } -Credential $winCreds
 
-Write-Header "Installing the Azure Monitor Agent on the Windows Arc-enabled server"
-#az connectedmachine extension create --name AzureMonitorWindowsAgent `
-#                                     --publisher Microsoft.Azure.Monitor `
-#                                     --type AzureMonitorWindowsAgent `
-#                                     --machine-name $Win2k19vmName `
-#                                     --resource-group $resourceGroup `
-#                                     --location $azureLocation `
-#                                     --enable-auto-upgrade true `
-#                                     --no-wait
-
 # Test Defender for Servers
 Write-Header "Simulating threats to generate alerts from Defender for Cloud"
-$remoteScriptFile = "$agentScript\testDefenderForServers.cmd"
-Copy-VMFile $Win2k19vmName -SourcePath "$Env:ArcBoxDir\testDefenderForServers.cmd" -DestinationPath $remoteScriptFile -CreateFullPath -FileSource Host -Force
-Copy-VMFile $Win2k22vmName -SourcePath "$Env:ArcBoxDir\testDefenderForServers.cmd" -DestinationPath $remoteScriptFile -CreateFullPath -FileSource Host -Force
+$remoteScriptFile = "$Env:ArcBoxDir\testDefenderForServers.cmd"
+Copy-VMFile $Win2k19vmName -SourcePath "$agentScript\testDefenderForServers.cmd" -DestinationPath $remoteScriptFile -CreateFullPath -FileSource Host -Force
+Copy-VMFile $Win2k22vmName -SourcePath "$agentScript\testDefenderForServers.cmd" -DestinationPath $remoteScriptFile -CreateFullPath -FileSource Host -Force
 
 $cmdExePath = "C:\Windows\System32\cmd.exe"
 $cmdArguments = "/C `"$remoteScriptFile`""
 
 Invoke-Command -VMName $Win2k19vmName -ScriptBlock { Start-Process -FilePath $Using:cmdExePath -ArgumentList $Using:cmdArguments } -Credential $winCreds
-
-# Onboarding to Vulnerability assessment solution
-#Write-Header "Onboarding to Vulnerability assessment solution"
-#$resourceId = $(az resource show --name $Win2k19vmName --resource-group $resourceGroup --resource-type Microsoft.HybridCompute/machines --query id --output tsv)
-#$Uri = "https://management.azure.com${resourceId}/providers/Microsoft.Security/serverVulnerabilityAssessments/mdetvm?api-version=2015-06-01-preview"
-#az rest --uri $Uri --method PUT
-
 
 Write-Output "Onboarding the nested Linux VMs as an Azure Arc-enabled servers"
 $ubuntuSession = New-SSHSession -ComputerName $Ubuntu01VmIp -Credential $linCreds -Force -WarningAction SilentlyContinue
@@ -393,34 +338,6 @@ $Command = "sudo sh /home/$nestedLinuxUsername/installArcAgentModifiedUbuntu.sh"
 $(Invoke-SSHCommand -SSHSession $ubuntuSession -Command $Command -Timeout 600 -WarningAction SilentlyContinue).Output
 $command = "curl -o ~/Downloads/eicar.com.txt"
 $(Invoke-SSHCommand -SSHSession $ubuntuSession -Command $Command -Timeout 600 -WarningAction SilentlyContinue).Output
-
-#Write-Header "Installing the Azure Monitor Agent on the Linux Arc-enabled server"
-#az connectedmachine extension create --name AzureMonitorLinuxAgent `
-#                                     --publisher Microsoft.Azure.Monitor `
-#                                     --type AzureMonitorLinuxAgent `
-#                                     --machine-name $Ubuntu01vmName `
-#                                     --resource-group $resourceGroup `
-#                                     --location $azureLocation `
-#                                     --enable-auto-upgrade true `
-#                                     --no-wait
-
-# Onboarding to Vulnerability assessment solution
-#Write-Header "Onboarding to Vulnerability assessment solution"
-#$resourceId = $(az resource show --name $Ubuntu01vmName --resource-group $resourceGroup --resource-type Microsoft.HybridCompute/machines --query id --output tsv)
-#$Uri = "https://management.azure.com${resourceId}/providers/Microsoft.Security/serverVulnerabilityAssessments/mdetvm?api-version=2015-06-01-preview"
-#az rest --uri $Uri --method PUT
-
-#$ubuntuSession = New-SSHSession -ComputerName $Ubuntu02VmIp -Credential $linCreds -Force -WarningAction SilentlyContinue
-#$Command = "sudo sh /home/$nestedLinuxUsername/installArcAgentModifiedUbuntu.sh"
-#$(Invoke-SSHCommand -SSHSession $ubuntuSession -Command $Command -Timeout 600 -WarningAction SilentlyContinue).Output
-
-# Configure SSH on the nested Windows VMs
-<#Write-Output "Configuring SSH via Azure Arc agent on the nested Windows VMs"
-Invoke-Command -VMName $Win2k19vmName, $Win2k22vmName -ScriptBlock {
-    # Allow SSH via Azure Arc agent
-    azcmagent config set incomingconnections.ports 22
-} -Credential $winCreds
-#>
 
 #############################################################
 # Install VSCode extensions
@@ -441,13 +358,16 @@ foreach ($extension in $VSCodeExtensions) {
 # Install PowerShell 7
 #############################################################
 Write-Header "Installing PowerShell 7 on the client VM"
-#Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.3.6/PowerShell-7.3.6-win-x64.msi" -OutFile $Env:ArcBoxDir\PowerShell-7.3.6-win-x64.msi
-Start-Process msiexec.exe -ArgumentList "/I $Env:ArcBoxDir\PowerShell-7.3.6-win-x64.msi /quiet"
 
+Start-Process msiexec.exe -ArgumentList "/I $Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi /quiet"
 
 Write-Header "Installing PowerShell 7 on the ArcBox-Win2K22 machine"
-Copy-VMFile $Win2k22vmName -SourcePath "$Env:ArcBoxDir\PowerShell-7.3.6-win-x64.msi" -DestinationPath "$Env:ArcBoxDir\PowerShell-7.3.6-win-x64.msi" -CreateFullPath -FileSource Host -Force
-Invoke-Command -VMName $Win2k22vmName -ScriptBlock { Start-Process msiexec.exe -ArgumentList "/I C:\ArcBox\PowerShell-7.3.6-win-x64.msi /quiet" } -Credential $winCreds
+Copy-VMFile $Win2k22vmName -SourcePath "$Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi" -DestinationPath "$Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi" -CreateFullPath -FileSource Host -Force
+Invoke-Command -VMName $Win2k22vmName -ScriptBlock { Start-Process msiexec.exe -ArgumentList "/I C:\ArcBox\PowerShell-7.4.1-win-x64.msi /quiet" } -Credential $winCreds
+
+Write-Header "Installing PowerShell 7 on the ArcBox-Win2K19 machine"
+Copy-VMFile $Win2k19vmName -SourcePath "$Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi" -DestinationPath "$Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi" -CreateFullPath -FileSource Host -Force
+Invoke-Command -VMName $Win2k19vmName -ScriptBlock { Start-Process msiexec.exe -ArgumentList "/I C:\ArcBox\PowerShell-7.4.1-win-x64.msi /quiet" } -Credential $winCreds
 
 Write-Header "Installing PowerShell 7 on the nested ArcBox-Ubuntu-01 VM"
 $ubuntuSession = New-SSHSession -ComputerName $Ubuntu01VmIp -Credential $linCreds -Force -WarningAction SilentlyContinue

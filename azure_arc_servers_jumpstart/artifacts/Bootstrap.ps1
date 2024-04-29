@@ -40,11 +40,20 @@ param (
 [System.Environment]::SetEnvironmentVariable('deploySQL', $deploySQL, [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable('ArcBoxDir', "C:\ArcBox", [System.EnvironmentVariableTarget]::Machine)
 
+
+# Formatting VMs disk
+$disk = (Get-Disk | Where-Object partitionstyle -eq 'raw')[0]
+$driveLetter = "F"
+$label = "VMsDisk"
+$disk | Initialize-Disk -PartitionStyle MBR -PassThru | `
+    New-Partition -UseMaximumSize -DriveLetter $driveLetter | `
+    Format-Volume -FileSystem NTFS -NewFileSystemLabel $label -Confirm:$false -Force
+
 # Creating ArcBox path
 Write-Output "Creating ArcBox path"
 $Env:ArcBoxDir = "C:\ArcBox"
 $Env:ArcBoxLogsDir = "$Env:ArcBoxDir\Logs"
-$Env:ArcBoxVMDir = "$Env:ArcBoxDir\Virtual Machines"
+$Env:ArcBoxVMDir = "F:\Virtual Machines"
 $Env:ArcBoxKVDir = "$Env:ArcBoxDir\KeyVault"
 $Env:ArcBoxIconDir = "$Env:ArcBoxDir\Icons"
 $Env:agentScript = "$Env:ArcBoxDir\agentScript"
@@ -121,7 +130,7 @@ Write-Host "Fetching Artifacts"
 Invoke-WebRequest ($templateBaseUrl + "artifacts/ArcServersLogonScript.ps1") -OutFile $Env:ArcBoxDir\ArcServersLogonScript.ps1
 Invoke-WebRequest ($templateBaseUrl + "artifacts/installArcAgent.ps1") -OutFile $Env:ArcBoxDir\agentScript\installArcAgent.ps1
 Invoke-WebRequest ($templateBaseUrl + "artifacts/installArcAgentUbuntu.sh") -OutFile $Env:ArcBoxDir\agentScript\installArcAgentUbuntu.sh
-Invoke-WebRequest ($templateBaseUrl + "artifacts/testDefenderForServers.cmd") -OutFile $Env:ArcBoxDir\testDefenderForServers.cmd
+Invoke-WebRequest ($templateBaseUrl + "artifacts/testDefenderForServers.cmd") -OutFile $Env:ArcBoxDir\agentScript\testDefenderForServers.cmd
 Invoke-WebRequest ($templateBaseUrl + "artifacts/InstallArcSQLExtensionAtScale.ps1") -OutFile $Env:ArcBoxDir\InstallArcSQLExtensionAtScale.ps1
 Invoke-WebRequest ($templateBaseUrl + "artifacts/testDefenderForSQL.ps1") -OutFile $Env:ArcBoxDir\agentScript\testDefenderForSQL.ps1
 Invoke-WebRequest ($templateBaseUrl + "artifacts/SqlAdvancedThreatProtectionShell.psm1") -OutFile $Env:ArcBoxDir\agentScript\SqlAdvancedThreatProtectionShell.psm1
