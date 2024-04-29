@@ -266,7 +266,7 @@ $linCreds = New-Object System.Management.Automation.PSCredential ($nestedLinuxUs
 
 # Restarting Windows VM Network Adapters
 Write-Header "Restarting Network Adapters"
-Start-Sleep -Seconds 20
+Start-Sleep -Seconds 45
 Invoke-Command -VMName $Win2k19vmName -ScriptBlock { Get-NetAdapter | Restart-NetAdapter } -Credential $winCreds
 Invoke-Command -VMName $Win2k22vmName -ScriptBlock { Get-NetAdapter | Restart-NetAdapter } -Credential $winCreds
 Invoke-Command -ComputerName $Win2k12vmName -ScriptBlock { Get-NetAdapter | Restart-NetAdapter } -Credential $winCreds
