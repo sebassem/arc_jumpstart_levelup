@@ -482,9 +482,18 @@ Write-Host "Creating deployment logs bundle"
 7z a $Env:ArcBoxLogsDir\LogsBundle-"$RandomString".zip $Env:ArcBoxLogsDir\*.log
 }'
 
+
+# Convert wallpaper to bmp for BGInfo
+$imgPath = "$Env:ArcBoxDir\wallpaper.png"
+$DestinationFilePath = "$Env:ArcBoxDir\wallpaper.bmp"
+[Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
+$file = Get-Item $imgPath
+$convertfile = new-object System.Drawing.Bitmap($file.Fullname)
+$convertfile.Save($DestinationFilePath, "bmp")
+
+
 # Changing to Jumpstart ArcBox wallpaper
 # Changing to Client VM wallpaper
-$imgPath = "$Env:ArcBoxDir\wallpaper.png"
 $code = @' 
 using System.Runtime.InteropServices; 
 namespace Win32{ 
@@ -502,9 +511,12 @@ namespace Win32{
 
 # Set wallpaper image based on the ArcBox Flavor deployed
 Write-Header "Changing Wallpaper"
-$imgPath = "$Env:ArcBoxDir\wallpaper.png"
+$imgPath = "$Env:ArcBoxDir\wallpaper.bmp"
 Add-Type $code
 [Win32.Wallpaper]::SetWallpaper($imgPath)
+
+# Run bgInfo
+bginfo.exe $Env:ArcBoxDir\bginfo.bgi /timer:0 /NOLICPROMPT
 
 # Send telemtry
 $Url = "https://arcboxleveluptelemtry.azurewebsites.net/api/triggerDeployment?"

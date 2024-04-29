@@ -82,7 +82,7 @@ Install-WindowsFeature -Name "DHCP" -IncludeManagementTools
 
 # Installing tools
 Write-Header "Installing Chocolatey Apps"
-$chocolateyAppList = 'azure-cli,az.powershell,vcredist140,microsoft-edge,azcopy10,vscode,git,7zip,putty.install,zoomit,openssl.light'
+$chocolateyAppList = 'azure-cli,az.powershell,vcredist140,microsoft-edge,azcopy10,vscode,git,7zip,putty.install,zoomit,openssl.light,bginfo'
 
 try {
     choco config get cacheLocation
@@ -126,6 +126,8 @@ Invoke-WebRequest ($templateBaseUrl + "artifacts/InstallArcSQLExtensionAtScale.p
 Invoke-WebRequest ($templateBaseUrl + "artifacts/testDefenderForSQL.ps1") -OutFile $Env:ArcBoxDir\agentScript\testDefenderForSQL.ps1
 Invoke-WebRequest ($templateBaseUrl + "artifacts/SqlAdvancedThreatProtectionShell.psm1") -OutFile $Env:ArcBoxDir\agentScript\SqlAdvancedThreatProtectionShell.psm1
 Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.3.6/PowerShell-7.3.6-win-x64.msi" -OutFile $Env:ArcBoxDir\PowerShell-7.3.6-win-x64.msi
+Invoke-WebRequest ($templateBaseUrl + "artifacts/bginfo.bgi") -OutFile $Env:ArcBoxDir\bginfo.bgi
+
 
 # Disable Microsoft Edge sidebar
 $RegistryPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Edge'
