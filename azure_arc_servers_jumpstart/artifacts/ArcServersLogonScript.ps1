@@ -438,7 +438,7 @@ Add-Type $code
 # Run bgInfo
 bginfo.exe $Env:ArcBoxDir\bginfo.bgi /timer:0 /NOLICPROMPT
 
-# Send telemtry
+<# Send telemtry
 $Url = "https://arcboxleveluptelemtry.azurewebsites.net/api/triggerDeployment?"
 $rowKey = -join ((97..122) | Get-Random -Count 10 | ForEach-Object { [char]$_ })
 $headers = @{
@@ -451,5 +451,5 @@ $Body = @{
 }
 $Body = $Body | ConvertTo-Json
 Invoke-RestMethod -Method 'Post' -Uri $url -Body $body -Headers $headers
-
+#>
 Stop-Transcript
