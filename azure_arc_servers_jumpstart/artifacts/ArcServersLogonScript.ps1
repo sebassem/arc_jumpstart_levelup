@@ -322,7 +322,7 @@ Invoke-Command -ComputerName $Win2k12vmName -ScriptBlock { powershell -File $Usi
 #Invoke-Command -VMName $Win2k22vmName -ScriptBlock { powershell -File $Using:nestedVMArcBoxDir\installArcAgent.ps1 -spnClientId $Using:spnClientId, -spnClientSecret $Using:spnClientSecret, -spnTenantId $Using:spnTenantId, -subscriptionId $Using:subscriptionId, -resourceGroup $Using:resourceGroup, -azureLocation $Using:azureLocation } -Credential $winCreds
 
 # Test Defender for Servers
-Write-Header "Simulating threats to generate alerts from Defender for Cloud"
+#Write-Header "Simulating threats to generate alerts from Defender for Cloud"
 $remoteScriptFile = "$Env:ArcBoxDir\testDefenderForServers.cmd"
 Copy-VMFile $Win2k19vmName -SourcePath "$agentScript\testDefenderForServers.cmd" -DestinationPath $remoteScriptFile -CreateFullPath -FileSource Host -Force
 Copy-VMFile $Win2k22vmName -SourcePath "$agentScript\testDefenderForServers.cmd" -DestinationPath $remoteScriptFile -CreateFullPath -FileSource Host -Force
@@ -383,6 +383,76 @@ Write-Host "Configuring PSWSMan on the Linux VM"
 $ubuntuSession = New-SSHSession -ComputerName $Ubuntu01VmIp -Credential $linCreds -Force -WarningAction SilentlyContinue
 $Command = "sudo pwsh -command 'Install-WSMan'"
 $(Invoke-SSHCommand -SSHSession $ubuntuSession -Command $Command -Timeout 600 -WarningAction SilentlyContinue).Output
+
+#############################################################
+# Install BGinfo
+#############################################################
+Write-Header "Installing BGinfo on nested windows VMs"
+
+$windowsVMs = @($Win2k19vmName, $Win2k22vmName, $Win2k12MachineName,$sqlvmName)
+
+foreach ($vm in $windowsVMs) {
+    if($deploySQL -eq $true -or $vm -ne $Win2k12MachineName){
+        Copy-VMFile $vm -SourcePath "$Env:ArcBoxDir\bginfo.bgi" -DestinationPath "$Env:ArcBoxDir\bginfo.bgi" -CreateFullPath -FileSource Host -Force
+        Invoke-Command -VMName $vm -ScriptBlock { Choco install bginfo /y} -Credential $winCreds
+        Invoke-Command -VMName $vm -ScriptBlock {
+            $imgPath = "C:\Jumpstart\Arcbox Wallpaper.png";
+            $DestinationFilePath = "C:\Jumpstart\Arcbox Wallpaper.bmp";
+            [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null;
+            $file = Get-Item $imgPath;
+            $convertfile = new-object System.Drawing.Bitmap($file.Fullname);
+            $convertfile.Save($DestinationFilePath, "bmp");
+            $code = @'
+using System.Runtime.InteropServices;
+namespace Win32{
+    public class Wallpaper{
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
+        static extern int SystemParametersInfo (int uAction , int uParam , string lpvParam , int fuWinIni) ;
+
+        public static void SetWallpaper(string thePath){
+            SystemParametersInfo(20,0,thePath,3);
+        }
+    }
+}
+'@;
+            $imgPath = "C:\Jumpstart\Arcbox Wallpaper.bmp";
+            Add-Type $code;
+            [Win32.Wallpaper]::SetWallpaper($imgPath);
+        } -Credential $winCreds
+
+        Invoke-Command -VMName $vm -ScriptBlock { & "C:\ProgramData\chocolatey\bin\Bginfo.exe" "C:\ArcBox\bginfo.bgi" /timer:0 /NOLICPROMPT} -Credential $winCreds
+    }
+    elseif($vm -eq $Win2k12MachineName){
+        Copy-VMFile $vm -SourcePath "$Env:ArcBoxDir\bginfo.bgi" -DestinationPath "$Env:ArcBoxDir\bginfo.bgi" -CreateFullPath -FileSource Host -Force
+        Invoke-Command -ComputerName $vm -ScriptBlock { Choco install bginfo /y} -Credential $winCreds
+        Invoke-Command -ComputerName $vm -ScriptBlock {
+            $imgPath = "C:\Jumpstart\Arcbox Wallpaper.png";
+            $DestinationFilePath = "C:\Jumpstart\Arcbox Wallpaper.bmp";
+            [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null;
+            $file = Get-Item $imgPath;
+            $convertfile = new-object System.Drawing.Bitmap($file.Fullname);
+            $convertfile.Save($DestinationFilePath, "bmp");
+            $code = @'
+using System.Runtime.InteropServices;
+namespace Win32{
+    public class Wallpaper{
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
+        static extern int SystemParametersInfo (int uAction , int uParam , string lpvParam , int fuWinIni) ;
+
+        public static void SetWallpaper(string thePath){
+            SystemParametersInfo(20,0,thePath,3);
+        }
+    }
+}
+'@;
+            $imgPath = "C:\Jumpstart\Arcbox Wallpaper.bmp";
+            Add-Type $code;
+            [Win32.Wallpaper]::SetWallpaper($imgPath);
+        } -Credential $winCreds
+
+        Invoke-Command -ComputerName $vm -ScriptBlock { & "C:\ProgramData\chocolatey\bin\Bginfo.exe" "C:\ArcBox\bginfo.bgi" /timer:0 /NOLICPROMPT} -Credential $winCreds
+    }
+}
 
 
 # Removing the LogonScript Scheduled Task so it won't run on next reboot
