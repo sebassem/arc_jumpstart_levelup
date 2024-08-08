@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.28.1.47646",
-      "templateHash": "340400677552364799"
+      "version": "0.29.47.4906",
+      "templateHash": "7254147033958960569"
     }
   },
   "parameters": {
@@ -165,8 +165,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "16150175137764108067"
+              "version": "0.29.47.4906",
+              "templateHash": "10394625636644799437"
             }
           },
           "parameters": {
@@ -498,8 +498,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "13398955536480108720"
+              "version": "0.29.47.4906",
+              "templateHash": "11385082066889669334"
             }
           },
           "parameters": {
@@ -577,8 +577,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "13563973020892248488"
+              "version": "0.29.47.4906",
+              "templateHash": "7246571661375969764"
             }
           },
           "parameters": {
@@ -839,19 +839,10 @@
               }
             },
             {
-              "type": "Microsoft.OperationsManagement/solutions",
-              "apiVersion": "2015-11-01-preview",
-              "name": "[format('SecurityInsights({0})', parameters('workspaceName'))]",
-              "location": "[parameters('location')]",
-              "properties": {
-                "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
-              },
-              "plan": {
-                "name": "[format('SecurityInsights({0})', parameters('workspaceName'))]",
-                "publisher": "Microsoft",
-                "product": "OMSGallery/SecurityInsights",
-                "promotionCode": ""
-              },
+              "type": "Microsoft.SecurityInsights/onboardingStates",
+              "apiVersion": "2024-03-01",
+              "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', parameters('workspaceName'))]",
+              "name": "Default",
               "dependsOn": [
                 "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
               ]
@@ -962,8 +953,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "3605065425905209050"
+              "version": "0.29.47.4906",
+              "templateHash": "8390033641979162316"
             }
           },
           "parameters": {
@@ -4562,8 +4553,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "17743936220571113000"
+              "version": "0.29.47.4906",
+              "templateHash": "17363404725474349468"
             }
           },
           "parameters": {
@@ -4748,8 +4739,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.28.1.47646",
-                      "templateHash": "7275846626047831721"
+                      "version": "0.29.47.4906",
+                      "templateHash": "8163039013467269509"
                     }
                   },
                   "parameters": {
@@ -4948,8 +4939,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "10152510443540251919"
+              "version": "0.29.47.4906",
+              "templateHash": "1056698182725546970"
             }
           },
           "parameters": {
