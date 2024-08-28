@@ -98,7 +98,7 @@ if ($inernalSwitch.Name -ne $switchName) {
 Write-Host "Creating demo VM Credentials"
 # Hard-coded username and password for the nested demo VMs
 $nestedWindowsUsername = "Administrator"
-$nestedWindowsPassword = "ArcDemo123!!"
+$nestedWindowsPassword = "JS123!!"
 
 # Hard-coded username and password for the nested demo 2012 VM
 $nestedWindows2k12Username = "Administrator"
@@ -275,7 +275,7 @@ Set-Content -Path $file -Value $hostfile -Force
 Write-Host "Creating  demo VM Credentials"
 # Hard-coded username and password for the nested demo VMs
 $nestedLinuxUsername = "arcdemo"
-$nestedLinuxPassword = "ArcDemo123!!"
+$nestedLinuxPassword = "JS123!!"
 
 # Create Linux credential object
 $secLinuxPassword = ConvertTo-SecureString $nestedLinuxPassword -AsPlainText -Force
